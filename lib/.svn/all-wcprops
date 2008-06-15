@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/!svn/ver/14/rails/plugins/atom_pub_server/lib
+END
+service_document.rb
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/!svn/ver/14/rails/plugins/atom_pub_server/lib/service_document.rb
+END
+atom_feed_helper.rb
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/!svn/ver/10/rails/plugins/atom_pub_server/lib/atom_feed_helper.rb
+END
+collection.rb
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/!svn/ver/13/rails/plugins/atom_pub_server/lib/collection.rb
+END
+atom_pub_server.rb
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/!svn/ver/10/rails/plugins/atom_pub_server/lib/atom_pub_server.rb
+END

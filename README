@@ -1,0 +1,98 @@
+AtomPubServer
+=============
+WARNING : This plugin just probably works with rails edge version(2.0RC)
+
+This plugin allows your app to create an atomPub service document from its controllers.
+
+
+Example
+=======
+
+==First you must add the term "acts_as_collection" to the controllers that manage your resorces.
+    Mandatory options:
+        :title => the collection's title
+        :workspace => the collection's workspace
+        :href => collection's IRI
+        :accept => array with MimeType objects that the post and put method accept
+    Other available options:
+        :categories => array of hashes. Within each hash:
+            :href => mandatory if the categories are not fixed
+            :fixed => 'yes' or 'no' (DEFAULT 'no')
+            :scheme => if the categories are fixed they can inherit from this scheme
+            :category => array of hashes. Mandatory if the categories are fixed. Within each hash:
+                :term
+                :scheme
+
+    Example:
+
+        class PostsController < ApplicationController
+            acts_as_collection :title => 'posts', :workspace => 'my blog', :href => 'http://myblog/posts',
+                :accept => Mime::ATOM_ENTRY,
+                :categories => [{
+                    :fixed => 'yes', :scheme => 'http://myblog/tags',
+                    :category => [{:term => 'rails'}, {:term => 'plugins'}]
+                },
+                {:href => 'http://myblog/mysections'}
+                ]
+        end
+
+==Then you must add the term "acts_as_service_document" to a controller. This controller will have a method called "document_service"
+that generates a valid atomPub service document xml.
+
+    Example:
+
+        class ServicesController < ApplicationController
+            acts_as_service_document
+ 
+            def index
+                render :xml => service_document
+            end
+        end
+
+        Writting 'http://localhost:3000/services' in your browser you lii get:
+
+            <service>
+                <workspace>
+                    <atom:title>my blog</atom:title>
+                    <collection href="http://myblog/posts">
+                        <atom:title>posts</atom:title>
+                        <accept>application/atom+xml;type=entry</accept>
+                        <categories scheme="http://myblog/tags" fixed="yes">
+                            <atom:category term="rails"/>
+                            <atom:category term="plugins"/>
+                        </categories>
+                        <categories href="http://myblog/mysections"/>
+                    </collection>
+                </workspace>
+            </service>
+    
+    
+==In addition, when you declares a controller with the term 'acts_as_collection' this plugin adds a 'before_filter' declaration. 
+This filter must be created too, and must be called 'filter_content_type'. It will be only executed before the create and update methods.
+The name of create and update methods can be initialized as two environment varible called ENV['COLLECTION_POST_METHOD'] and ENV['ENTRY_PUT_METHOD']. 
+Default names are :create and :update.
+Please visit http://ryandaigle.com/articles/2007/10/22/what-s-new-in-edge-rails-filters-get-tweaked for more info about the rails 2.0 filters sintax.
+
+
+==Moreover, this plugin add some MimeType objects specifics for atomPub server implementation:
+
+    Mime::ATOM_ENTRY => 'application/atom+xml;type=entry'
+    Mime::ATOM_SVC => 'application/atomsvc+xml'
+    Mime::ATOM_CAT => 'application/atomcat+xml'
+
+
+==Finally, the atomPubServer plugins override the new AtomFeedHelper class in order to allow the developer could include new namespaces to an atom feed.
+        The rails 2.0 helper sintax:
+
+            atom_feed do |feed|
+                ...
+            end
+
+        The atomPubServer sintax:
+
+            atom_feed({'xmlns:app' => 'http://www.w3.org/2007/app', 
+                'xmlns:georss' => 'http://www.georss.org/georss/10'}) do |feed|
+                ...
+            end
+
+Copyright (c) 2007 David Calavera, released under the MIT license
